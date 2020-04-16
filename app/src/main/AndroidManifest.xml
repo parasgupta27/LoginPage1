@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DeliveryPanel"></activity>
+        <activity android:name=".Settings_Del"></activity>
+        <activity android:name=".DeliveryPanel" />
 
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"

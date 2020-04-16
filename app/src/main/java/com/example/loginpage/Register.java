@@ -13,40 +13,51 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Register extends AppCompatActivity {
 
-    private EditText email,password;
-    private EditText name, phone;
-    private Button register;
+    TextInputLayout regName, regEmail, regPhoneNo, regPassword;
+    Button regBtn, regToLoginBtn;
     private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        email = findViewById(R.id.email_signin);
-        password = findViewById(R.id.password_signin);
-        register = findViewById(R.id.register);
+        regName = findViewById(R.id.reg_name);
+
+        regEmail = findViewById(R.id.reg_email);
+        regPhoneNo = findViewById(R.id.reg_phoneNo);
+        regPassword = findViewById(R.id.reg_password);
+        regBtn = findViewById(R.id.reg_btn);
+        regToLoginBtn = findViewById(R.id.reg_login_btn);
 
         auth = FirebaseAuth.getInstance();
-        register.setOnClickListener(new View.OnClickListener() {
+        regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String txt_email = email.getText().toString();
-                String txt_password = password.getText().toString();
+                String txt_email = regEmail.getEditText().getText().toString();
+                String txt_password = regPassword.getEditText().getText().toString();
 
-                if(TextUtils.isEmpty(txt_email)||TextUtils.isEmpty(txt_password))
-                    Toast.makeText(Register.this,"Empty Credentials!",Toast.LENGTH_LONG).show();
-                else if(txt_password.length() < 6)
-                    Toast.makeText(Register.this, "Password too short!", Toast.LENGTH_SHORT).show();
+                if(!validateName() |!validatePassword() | !validatePhoneNo() | !validateEmail() )
+                {
+                    Toast.makeText(Register.this, "Try again", Toast.LENGTH_SHORT).show();
+                }
                 else{
                         registerUser(txt_email,txt_password);
 
                 }
 
+            }
+        });
+
+        regToLoginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Register.this,MainActivity.class));
             }
         });
 
@@ -66,4 +77,70 @@ public class Register extends AppCompatActivity {
             }
         });
     }
+    private Boolean validateEmail() {
+        String val = regEmail.getEditText().getText().toString();
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+        if (val.isEmpty()) {
+            regEmail.setError("Field cannot be empty");
+            return false;
+        } else if (!val.matches(emailPattern)) {
+            regEmail.setError("Invalid email address");
+            return false;
+        } else {
+            regEmail.setError(null);
+            regEmail.setErrorEnabled(false);
+            return true;
+        }
+    }
+    private Boolean validateName() {
+        String val = regName.getEditText().getText().toString();
+
+        if (val.isEmpty()) {
+            regName.setError("Field cannot be empty");
+            return false;
+        }
+        else {
+            regName.setError(null);
+            regName.setErrorEnabled(false);
+            return true;
+        }
+    }
+    private Boolean validatePhoneNo() {
+        String val = regPhoneNo.getEditText().getText().toString();
+
+        if (val.isEmpty()) {
+            regPhoneNo.setError("Field cannot be empty");
+            return false;
+        } else {
+            regPhoneNo.setError(null);
+            regPhoneNo.setErrorEnabled(false);
+            return true;
+        }
+    }
+    private Boolean validatePassword() {
+        String val = regPassword.getEditText().getText().toString();
+        String passwordVal = "^" +
+                "(?=.*[0-9])" +         //at least 1 digit
+                "(?=.*[a-z])" +         //at least 1 lower case letter
+                "(?=.*[A-Z])" +         //at least 1 upper case letter
+                "(?=.*[a-zA-Z])" +      //any letter
+                "(?=.*[@#$%^&+=])" +    //at least 1 special character
+                "(?=\\S+$)" +           //no white spaces
+                ".{4,}" +               //at least 4 characters
+                "$";
+
+        if (val.isEmpty()) {
+            regPassword.setError("Field cannot be empty");
+            return false;
+        } else if (!val.matches(passwordVal)) {
+            regPassword.setError("Password is too weak");
+            return false;
+        } else {
+            regPassword.setError(null);
+            regPassword.setErrorEnabled(false);
+            return true;
+        }
+    }
+
 }
