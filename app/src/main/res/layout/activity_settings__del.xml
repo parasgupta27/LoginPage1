@@ -22,7 +22,7 @@
         android:src="@drawable/ic_account_box_black_24dp" />
 
         <TextView
-            android:id="@+id/fullname_field"
+            android:id="@+id/fullName_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -38,11 +38,11 @@
             android:id="@+id/username_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/fullname_field"
+            android:layout_below="@id/fullName_field"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/profile_image"
             android:includeFontPadding="false"
-            android:text="user_email"
+            android:text="user_username"
             android:textSize="14sp" />
 
     </RelativeLayout>
@@ -55,7 +55,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:hint="Full Name"
-            android:id="@+id/full_name_profile"
+            android:id="@+id/fullName"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
 
@@ -69,8 +69,8 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:hint="Email"
-            android:id="@+id/email"
+            android:hint="Username"
+            android:id="@+id/username"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
 
@@ -125,11 +125,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:background="#fece2f"
+            android:layout_width="match_parent"
 
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
+            android:background="#fece2f"
+            android:onClick="Update"
             android:text="UPDATE" />
 
     </LinearLayout>

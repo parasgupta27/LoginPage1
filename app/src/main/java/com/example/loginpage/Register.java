@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,12 +18,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class Register extends AppCompatActivity {
 
-    TextInputLayout regName, regEmail, regPhoneNo, regPassword;
+    TextInputLayout regName, regUsername, regPhoneNo, regPassword;
     Button regBtn, regToLoginBtn;
-    private FirebaseAuth auth;
+    RadioGroup radio_group_categ;
+    RadioButton category;
+    FirebaseDatabase rootNode;
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,26 +40,38 @@ public class Register extends AppCompatActivity {
 
         regName = findViewById(R.id.reg_name);
 
-        regEmail = findViewById(R.id.reg_email);
+        regUsername = findViewById(R.id.reg_email);
         regPhoneNo = findViewById(R.id.reg_phoneNo);
         regPassword = findViewById(R.id.reg_password);
         regBtn = findViewById(R.id.reg_btn);
         regToLoginBtn = findViewById(R.id.reg_login_btn);
 
-        auth = FirebaseAuth.getInstance();
+        radio_group_categ = findViewById(R.id.radio_group_category);
+
+
+
+
+
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String txt_email = regEmail.getEditText().getText().toString();
-                String txt_password = regPassword.getEditText().getText().toString();
-
-                if(!validateName() |!validatePassword() | !validatePhoneNo() | !validateEmail() )
+                rootNode = FirebaseDatabase.getInstance();
+                reference = rootNode.getReference("users");
+                String name =regName.getEditText().getText().toString();
+                String username = regUsername.getEditText().getText().toString();
+                String phoneNo = regPhoneNo.getEditText().getText().toString();
+                String password = regPassword.getEditText().getText().toString();
+                category = findViewById(radio_group_categ.getCheckedRadioButtonId());
+                String category_user = category.getText().toString();
+                if(!validateUsername() | !validateName() |!validatePassword() |!validatePhoneNo())
                 {
-                    Toast.makeText(Register.this, "Try again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Try Again", Toast.LENGTH_SHORT).show();
                 }
-                else{
-                        registerUser(txt_email,txt_password);
-
+                else {
+                    UserHelper helperClass = new UserHelper(name, password, phoneNo, "50", username,category_user);
+                    reference.child(username).setValue(helperClass);
+                    Toast.makeText(Register.this, "Registered. Please login again.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Register.this,MainActivity.class));
                 }
 
             }
@@ -63,33 +86,28 @@ public class Register extends AppCompatActivity {
 
     }
 
-    private void registerUser(String txt_email, String txt_password) {
-        auth.createUserWithEmailAndPassword(txt_email,txt_password).addOnCompleteListener(Register.this,new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(Register.this, "Welcome To Family!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Register.this,MainActivity.class));
-                    finish();
-                }
-                else
-                    Toast.makeText(Register.this, "User already exists!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    private Boolean validateEmail() {
-        String val = regEmail.getEditText().getText().toString();
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+
+
+
+
+
+    private Boolean validateUsername() {
+        String val = regUsername.getEditText().getText().toString();
+        String noWhiteSpace = "\\A\\w{4,20}\\z";
 
         if (val.isEmpty()) {
-            regEmail.setError("Field cannot be empty");
+            regUsername.setError("Field cannot be empty");
             return false;
-        } else if (!val.matches(emailPattern)) {
-            regEmail.setError("Invalid email address");
+        } else if (val.length() >= 15) {
+            regUsername.setError("Username too long");
+            return false;
+        } else if (!val.matches(noWhiteSpace)) {
+            regUsername.setError("White Spaces are not allowed");
             return false;
         } else {
-            regEmail.setError(null);
-            regEmail.setErrorEnabled(false);
+            regUsername.setError(null);
+            regUsername.setErrorEnabled(false);
             return true;
         }
     }

@@ -24,6 +24,7 @@ public class DeliveryPanel extends AppCompatActivity implements NavigationView.O
     NavigationView navigationview;
     Toolbar toolbar;
 
+    String user_username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,8 @@ public class DeliveryPanel extends AppCompatActivity implements NavigationView.O
         toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
+
+        //Add these 2 lines to get data from Login
 
 
 
@@ -74,9 +77,27 @@ public class DeliveryPanel extends AppCompatActivity implements NavigationView.O
                 ftr.replace(R.id.fragment_container,frag).commit();
                 break;
             case R.id.profile:
-                startActivity(new Intent(DeliveryPanel.this,Settings_Del.class));
+                PassData();
+
+
 
         }
         return true;
+    }
+    private void PassData() {
+        Intent intent = getIntent();
+        String user_username = intent.getStringExtra("username");
+        String user_name = intent.getStringExtra("name");
+        String user_radius = intent.getStringExtra("radius");
+        String user_phoneNo = intent.getStringExtra("phone");
+        String user_password = intent.getStringExtra("password");
+
+        Intent intent_set = new Intent(DeliveryPanel.this, Settings_Del.class);
+        intent_set.putExtra("username", user_username);
+        intent_set.putExtra("name", user_name);
+        intent_set.putExtra("radius", user_radius);
+        intent_set.putExtra("phone", user_phoneNo);
+        intent_set.putExtra("password", user_password);
+        startActivity(intent_set);
     }
 }
